@@ -44,7 +44,7 @@ database = os.environ["POSTGRES_DB"]
 # Optional configuration
 MAX_RETRIES = int(os.environ.get("PADEL_MAX_RETRIES", "2"))
 REQUEST_TIMEOUT = int(os.environ.get("PADEL_REQUEST_TIMEOUT", "20"))  # seconds
-INCREMENTAL_MATCHES = bool(os.environ.get("PADEL_INCREMENTAL", "1"))  # default to True
+INCREMENTAL_MATCHES = bool(os.environ.get("INCREMENTAL_MATCHES", "1"))  # default to True
 
 headers = {
     "Authorization": f"Bearer {API_TOKEN}",
