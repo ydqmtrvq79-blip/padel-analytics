@@ -44,7 +44,7 @@ database = os.environ["POSTGRES_DB"]
 # Optional configuration
 MAX_RETRIES = int(os.environ.get("PADEL_MAX_RETRIES", "2"))
 REQUEST_TIMEOUT = int(os.environ.get("PADEL_REQUEST_TIMEOUT", "20"))  # seconds
-INCREMENTAL_MATCHES = bool(os.environ.get("INCREMENTAL_MATCHES", "1"))  # default to True
+INCREMENTAL_MATCHES = int(os.environ.get("INCREMENTAL_MATCHES", "1"))  # default to True
 
 headers = {
     "Authorization": f"Bearer {API_TOKEN}",
@@ -52,7 +52,7 @@ headers = {
 }
 
 # Only matches from yesterday
-if INCREMENTAL_MATCHES:
+if INCREMENTAL_MATCHES == 1:
     yesterday = (pd.Timestamp("today") - pd.Timedelta(1, "D")).date()
     params = {
         "before_date": yesterday,
@@ -171,7 +171,7 @@ def store_matches(df):
     try:
         engine = create_engine(engine_url, pool_pre_ping=True)
         with engine.begin() as conn:
-            if_exists = "append" if INCREMENTAL_MATCHES else "replace"
+            if_exists = "append" if INCREMENTAL_MATCHES == 1 else "replace"
             table_name = "matches"
             logger.info("Writing DataFrame to table '%s' ('%s')", table_name, if_exists)
             # method='multi' can speed up bulk inserts; adjust chunksize if needed.
