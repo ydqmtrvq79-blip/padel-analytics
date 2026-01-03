@@ -50,10 +50,10 @@ headers = {
     "Accept": "application/json"
 }
 
-yesterday = pd.Timestamp.now() - pd.Timedelta(days=1)
+yesterday = (pd.Timestamp("today") - pd.Timedelta(1, "D")).date()
 params = {
-    "after_date": yesterday,
-    # "before_date": "2025-12-13"
+    # "after_date": yesterday,
+    # "after_date": "2025-12-13"
 }
 
 # Postgres configuration
@@ -105,7 +105,6 @@ def extract_team_sides(players: dict) -> dict:
 
 def parse_matches(df: pd.DataFrame) -> pd.DataFrame:
     # Flatten everything on first level (excluding players info)
-    df = pd.json_normalize(df, max_level=0)
     players_cols = df["players"].apply(extract_team_sides).apply(pd.Series)
 
     df_flat = pd.concat(
@@ -137,10 +136,10 @@ def fetch_matches():
         resp.raise_for_status()  # raises HTTPError for 4xx/5xx
     except requests.exceptions.HTTPError as e:
         # Non-2xx response
-        logger.error("HTTP error fetching players: %s (status %s)", e, getattr(e.response, "status_code", ""))
+        logger.error("HTTP error fetching matches: %s (status %s)", e, getattr(e.response, "status_code", ""))
         raise
     except requests.exceptions.RequestException as e:
-        logger.error("Network error fetching players: %s", e)
+        logger.error("Network error fetching matches: %s", e)
         raise
 
     try:
@@ -153,9 +152,11 @@ def fetch_matches():
         logger.error("API response missing 'data' key")
         raise RuntimeError("API response missing 'data'")
 
-    df_raw_data = pd.json_normalize(payload["data"])
-    df_matches = parse_matches(df_raw_data)
-    logger.info("Fetched %d player records", len(df_matches))
+    df_raw_data = pd.json_normalize(payload["data"], max_level=0)
+    df_matches = pd.DataFrame()
+    if len(df_raw_data) > 0:
+        df_matches = parse_matches(df_raw_data)
+        logger.info("Fetched %d match records", len(df_matches))
 
     return df_matches
 
@@ -185,6 +186,7 @@ def main():
     start = time.time()
     try:
         df_matches = fetch_matches()
+
         if df_matches.empty:
             logger.warning("No new matches found")
         else:
