@@ -46,8 +46,8 @@ MAX_RETRIES = int(os.environ.get("PADEL_MAX_RETRIES", "2"))
 REQUEST_TIMEOUT = int(os.environ.get("PADEL_REQUEST_TIMEOUT", "20"))  # seconds
 INCREMENTAL_MATCHES = int(os.environ.get("INCREMENTAL_MATCHES", "1"))  # default to True
 
-logger.info("INCREMENTAL_MATCHES(s)=%s", os.environ("INCREMENTAL_MATCHES"))
-logger.info("INCREMENTAL_MATCHES(d)=%d", os.environ("INCREMENTAL_MATCHES"))
+logger.info("INCREMENTAL_MATCHES(s)=%s", os.environ["INCREMENTAL_MATCHES"])
+logger.info("INCREMENTAL_MATCHES(d)=%d", os.environ["INCREMENTAL_MATCHES"])
 
 headers = {
     "Authorization": f"Bearer {API_TOKEN}",
