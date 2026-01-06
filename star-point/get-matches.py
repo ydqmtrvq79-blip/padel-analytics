@@ -46,8 +46,6 @@ MAX_RETRIES = int(os.environ.get("PADEL_MAX_RETRIES", "2"))
 REQUEST_TIMEOUT = int(os.environ.get("PADEL_REQUEST_TIMEOUT", "20"))  # seconds
 INCREMENTAL_MATCHES = int(os.environ.get("INCREMENTAL_MATCHES", "1"))  # default to True
 
-logger.info("INCREMENTAL_MATCHES(s)=%d", INCREMENTAL_MATCHES)
-
 headers = {
     "Authorization": f"Bearer {API_TOKEN}",
     "Accept": "application/json"
@@ -62,12 +60,6 @@ if INCREMENTAL_MATCHES == 1:
     }
 else:
     params = {}
-
-# Postgres configuration
-username = os.environ["POSTGRES_USER"]
-password = os.environ["POSTGRES_PWD"]
-host = os.environ["POSTGRES_HOST"]
-database = os.environ["POSTGRES_DB"]
 
 # Force retries only for certain response codes
 session = requests.Session()
